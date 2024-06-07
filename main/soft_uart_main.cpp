@@ -44,7 +44,7 @@ double dataDeltaTime = 0;
 const char* EXAMPLE_TAG = "dedicated_gpio_example";
 
 
-void ECGDataGet();
+void ECGDataGet() {}
 
 extern "C" void app_main(void)
 {
@@ -93,7 +93,7 @@ error:
     }
 }
 
-
+/*
 void ECGDataGet()
 {
     uint8_t data;
@@ -146,3 +146,4 @@ void ECGDataGet()
         }
     }
 }
+*/
