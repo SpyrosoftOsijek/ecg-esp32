@@ -1,0 +1,21 @@
+name: CI
+on:
+  pull_request:
+    branches: ["develop", "main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: espressif/idf:release-v5.2
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build the project
+        run: |
+          . /opt/esp/entrypoint.sh
+          idf.py build
+        working-directory: ${{ github.workspace }}
