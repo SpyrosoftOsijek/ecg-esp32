@@ -4,17 +4,15 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "sdkconfig.h"
+
 #define UART_TX_PIN CONFIG_EMULATE_UART_GPIO_TX
 #define UART_RX_PIN CONFIG_EMULATE_UART_GPIO_RX
 
-
 const char* EXAMPLE_TAG = "UARTManager";
 
-
 UARTManager::UARTManager(ECG& ecgDataRef)
-    : soft_uart_port(nullptr), ecgData(ecgDataRef),rxBuff{},
-      ECGdataFSM(ECG_IDLE), ECGDataLength(0), dataCount(0), flushFlag(0), ECG16Bitdata(0)  {}
-
+    : soft_uart_port(nullptr), ecgData(ecgDataRef), rxBuff{},
+      ECGdataFSM(ECG_IDLE), ECGDataLength(0), dataCount(0), flushFlag(0), ECG16Bitdata(0) {}
 
 void UARTManager::ECGDataGet() {
     uint8_t data;
@@ -74,11 +72,8 @@ void UARTManager::init() {
     ret = soft_uart_new(&config, &soft_uart_port);
 
     ESP_LOGI(EXAMPLE_TAG, "Starting main loop");
-
-   
-
-
 }
+
 uint8_t* UARTManager::getRxBuff() {
     return rxBuff;
 }

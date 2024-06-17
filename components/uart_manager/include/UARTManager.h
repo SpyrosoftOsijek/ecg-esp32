@@ -5,11 +5,13 @@
 #include "ECG.h"
 #include <cstdint>
 
+class ECG;
+
 class UARTManager {
 private:
     soft_uart_port_t soft_uart_port;
     ECG& ecgData;
-   uint8_t rxBuff[1024];
+    uint8_t rxBuff[1024];
 
     enum ECGState {
         ECG_IDLE,
@@ -26,12 +28,10 @@ private:
     uint16_t ECG16Bitdata;
 
 public:
-
     UARTManager(ECG& ecgDataRef);
     void ECGDataGet();
     void init();
     uint8_t* getRxBuff();
-
 };
 
-#endif 
+#endif

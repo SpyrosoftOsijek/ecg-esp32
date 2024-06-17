@@ -1,12 +1,11 @@
 #include "ECG.h"
 #include "esp_log.h"
 
- //const char* EXAMPLE_TAG = "UARTManager";
+ECG::ECG() noexcept : flushFlag(false), uartManager(*this) {}
 
 void ECG::addECGData(const uint16_t* data, size_t length) noexcept {
     for (size_t i = 0; i < length; i++) {
         ECGQueue.push(data[i]);
-        //ESP_LOGI("UARTManager", "Data added to queue: 0x%04x", data[i]);
     }
     flushFlag = 1;
 }
@@ -16,7 +15,7 @@ void ECG::displayData() noexcept {
 
     if (flushFlag != 1) {
         return;
-    } 
+    }
     flushFlag = 0;
 
     while (!tempQueue.empty()) {
@@ -40,6 +39,7 @@ uint16_t ECG::getFrontECGData() const noexcept {
     }
     return 0;
 }
+
 uint16_t ECG::popFrontECGData() noexcept {
     if (!ECGQueue.empty()) {
         uint16_t front = ECGQueue.front();
@@ -47,4 +47,14 @@ uint16_t ECG::popFrontECGData() noexcept {
         return front;
     }
     return 0;
+}
+
+void ECG::start() {
+    uartManager.init();
+
+    while (true) {
+        uartManager.ECGDataGet();
+        displayData();
+       // vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
 }
