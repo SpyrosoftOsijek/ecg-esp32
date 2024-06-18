@@ -60,7 +60,7 @@ void UARTManager::ECGDataGet() {
     }
 }
 
-void UARTManager::addECGData(const uint16_t* data, size_t length) {
+void UARTManager::addECGData(const uint16_t* data, size_t length) { 
     for (size_t i = 0; i < length; i++) {
         ECGQueue.push(data[i]);
     }
@@ -105,4 +105,8 @@ void UARTManager::displayData() {
         tempQueue.pop();
         ESP_LOGI(EXAMPLE_TAG, "ECG Data: 0x%04x", ECGData);
     }
+}
+
+std::queue<uint16_t> UARTManager::getECGQueue() const {
+    return ECGQueue;
 }

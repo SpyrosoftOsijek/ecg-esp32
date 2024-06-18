@@ -18,6 +18,6 @@ extern "C" void app_main(void) {
     while (true) {
         ecg.getData();
         ecg.displayECGData();
-        vTaskDelay(10 / portTICK_PERIOD_MS); 
+        vTaskDelay(100 / portTICK_PERIOD_MS); 
     }
 }

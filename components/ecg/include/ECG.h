@@ -2,14 +2,14 @@
 #define ECG_H
 
 #include <cstdint>
-#include "ServiceProvider.h"
+#include "IECGDataProvider.h"
 
 class ECG {
 private:
-    ServiceProvider& serviceProvider;
+    IECGDataProvider& serviceProvider;
 
 public:
-    ECG(ServiceProvider& serviceProviderRef) noexcept;
+    ECG(IECGDataProvider& serviceProviderRef) noexcept;
     void getData();
     void displayECGData();
 };

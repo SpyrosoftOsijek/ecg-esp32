@@ -2,11 +2,12 @@
 #define UARTMANAGER_H
 
 #include "soft_uart.h"
-#include "ServiceProvider.h"
+#include "IECGDataProvider.h"
 #include <cstdint>
 #include <queue>
 
-class UARTManager : public ServiceProvider {
+
+class UARTManager : public IECGDataProvider {
 private:
     soft_uart_port_t soft_uart_port;
     uint8_t rxBuff[1024];
@@ -35,6 +36,8 @@ public:
     void displayData() override;
     void init();
     uint8_t* getRxBuff();
+    std::queue<uint16_t> getECGQueue() const ;
+
 };
 
 #endif 

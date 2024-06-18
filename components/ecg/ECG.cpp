@@ -1,7 +1,7 @@
 #include "ECG.h"
 #include "esp_log.h"
 
-ECG::ECG(ServiceProvider& serviceProviderRef) noexcept
+ECG::ECG( IECGDataProvider& serviceProviderRef) noexcept
     : serviceProvider(serviceProviderRef) {}
 
 void ECG::getData() {
