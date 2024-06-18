@@ -1,26 +1,17 @@
 #ifndef ECG_H
 #define ECG_H
 
-#include "UARTManager.h"
-#include <queue>
 #include <cstdint>
+#include "ServiceProvider.h"
 
 class ECG {
 private:
-    std::queue<uint16_t> ECGQueue;
-    uint8_t flushFlag;
-    UARTManager uartManager;
+    ServiceProvider& serviceProvider;
 
 public:
-    ECG() noexcept;
-
-    void addECGData(const uint16_t* data, size_t length) noexcept;
-    void displayData() noexcept;
-    bool isFlushFlagSet() const noexcept;
-    void resetFlushFlag() noexcept;
-    uint16_t getFrontECGData() const noexcept;
-    uint16_t popFrontECGData() noexcept;
-    void start();
+    ECG(ServiceProvider& serviceProviderRef) noexcept;
+    void getData();
+    void displayECGData();
 };
 
-#endif
+#endif 

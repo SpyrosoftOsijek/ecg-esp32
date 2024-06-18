@@ -2,16 +2,16 @@
 #define UARTMANAGER_H
 
 #include "soft_uart.h"
-#include "ECG.h"
+#include "ServiceProvider.h"
 #include <cstdint>
+#include <queue>
 
-class ECG;
-
-class UARTManager {
+class UARTManager : public ServiceProvider {
 private:
     soft_uart_port_t soft_uart_port;
-    ECG& ecgData;
     uint8_t rxBuff[1024];
+    std::queue<uint16_t> ECGQueue;
+    bool flushFlag;
 
     enum ECGState {
         ECG_IDLE,
@@ -23,15 +23,18 @@ private:
     uint8_t ECGdataFSM;
     uint8_t ECGDataLength;
     uint8_t dataCount;
-    uint8_t flushFlag;
     uint16_t ECGData16Buff[128];
     uint16_t ECG16Bitdata;
 
 public:
-    UARTManager(ECG& ecgDataRef);
-    void ECGDataGet();
+    UARTManager();
+    void ECGDataGet() override;
+    void addECGData(const uint16_t* data, size_t length) override;
+    bool isFlushFlagSet() const override;
+    void resetFlushFlag() override;
+    void displayData() override;
     void init();
     uint8_t* getRxBuff();
 };
 
-#endif
+#endif 

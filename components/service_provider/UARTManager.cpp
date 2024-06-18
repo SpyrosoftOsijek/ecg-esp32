@@ -5,14 +5,14 @@
 #include "freertos/task.h"
 #include "sdkconfig.h"
 
-#define UART_TX_PIN CONFIG_EMULATE_UART_GPIO_TX
-#define UART_RX_PIN CONFIG_EMULATE_UART_GPIO_RX
+#define UART_TX_PIN 16
+#define UART_RX_PIN 17
 
 const char* EXAMPLE_TAG = "UARTManager";
 
-UARTManager::UARTManager(ECG& ecgDataRef)
-    : soft_uart_port(nullptr), ecgData(ecgDataRef), rxBuff{},
-      ECGdataFSM(ECG_IDLE), ECGDataLength(0), dataCount(0), flushFlag(0), ECG16Bitdata(0) {}
+UARTManager::UARTManager()
+    : soft_uart_port(nullptr), rxBuff{},
+      flushFlag(false), ECGdataFSM(ECG_IDLE), ECGDataLength(0), dataCount(0), ECG16Bitdata(0) {}
 
 void UARTManager::ECGDataGet() {
     uint8_t data;
@@ -21,10 +21,10 @@ void UARTManager::ECGDataGet() {
     esp_err_t ret = soft_uart_receive(soft_uart_port, rxBuff, expected_read_size);
 
     if (ret == ESP_OK) {
-        ESP_LOGI(EXAMPLE_TAG, "Data received: %d bytes", expected_read_size);
+         ESP_LOGI(EXAMPLE_TAG, "Data received: %d bytes", expected_read_size);
         for (size_t i = 0; i < expected_read_size; i++) {
             data = rxBuff[i];
-            ESP_LOGI(EXAMPLE_TAG, "Received byte: 0x%02x", data);
+             ESP_LOGI(EXAMPLE_TAG, "Received byte: 0x%02x", data);
             switch (ECGdataFSM) {
                 case ECG_IDLE:
                     if (data == 0xAA) {
@@ -48,16 +48,31 @@ void UARTManager::ECGDataGet() {
                     break;
                 case ECG_END:
                     if (data == 0xef) {
-                        ecgData.addECGData(ECGData16Buff, dataCount);
-                        flushFlag = 1;
+                        addECGData(ECGData16Buff, dataCount);
+                        flushFlag = true;
                     }
                     ECGdataFSM = ECG_IDLE;
                     break;
             }
         }
     } else {
-        ESP_LOGE(EXAMPLE_TAG, "Error receiving data: %s", esp_err_to_name(ret));
+         ESP_LOGE(EXAMPLE_TAG, "Error receiving data: %s", esp_err_to_name(ret));
     }
+}
+
+void UARTManager::addECGData(const uint16_t* data, size_t length) {
+    for (size_t i = 0; i < length; i++) {
+        ECGQueue.push(data[i]);
+    }
+    flushFlag = true;
+}
+
+bool UARTManager::isFlushFlagSet() const {
+    return flushFlag;
+}
+
+void UARTManager::resetFlushFlag() {
+    flushFlag = false;
 }
 
 void UARTManager::init() {
@@ -71,9 +86,23 @@ void UARTManager::init() {
 
     ret = soft_uart_new(&config, &soft_uart_port);
 
-    ESP_LOGI(EXAMPLE_TAG, "Starting main loop");
 }
 
 uint8_t* UARTManager::getRxBuff() {
     return rxBuff;
+}
+
+void UARTManager::displayData() {
+    std::queue<uint16_t> tempQueue = ECGQueue;
+
+    if (!flushFlag) {
+        return;
+    }
+    flushFlag = false;
+
+    while (!tempQueue.empty()) {
+        uint16_t ECGData = tempQueue.front();
+        tempQueue.pop();
+        ESP_LOGI(EXAMPLE_TAG, "ECG Data: 0x%04x", ECGData);
+    }
 }
