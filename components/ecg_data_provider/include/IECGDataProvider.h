@@ -3,18 +3,20 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <queue>
+
+using ECGDataQueue = std::queue<std::uint16_t>;
 
 class IECGDataProvider {
 public:
-    virtual void ECGDataGet() = 0;
+    virtual void parseECGData() = 0;
+    virtual ECGDataQueue& getECGQueue() {
+        return dataQueue;
+    }
+protected:
     virtual void addECGData(const uint16_t* data, size_t length) = 0;
-    virtual bool isFlushFlagSet() const = 0;
-    virtual void resetFlushFlag() = 0;
-    virtual void displayData() = 0;
 
-    
-    virtual ~IECGDataProvider() = default;
-
+    ECGDataQueue dataQueue{};
 };
 
 #endif

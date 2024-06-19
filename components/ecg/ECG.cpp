@@ -2,12 +2,20 @@
 #include "esp_log.h"
 
 ECG::ECG( IECGDataProvider& serviceProviderRef) noexcept
-    : serviceProvider(serviceProviderRef) {}
+    : serviceProvider(serviceProviderRef), dataQueue{serviceProviderRef.getECGQueue()} {}
 
-void ECG::getData() {
-    serviceProvider.ECGDataGet();
-}
 
+
+const ECGDataQueue& ECG::getECGDataQueue() const {
+ const ECGDataQueue& ecgQueue = serviceProvider.getECGQueue();
+    return ecgQueue;
+ }
+
+ 
 void ECG::displayECGData() {
-    serviceProvider.displayData();
+    while (!dataQueue.empty()) {
+        uint16_t ECGData = dataQueue.front();
+        dataQueue.pop();
+        ESP_LOGI("Display ECG data", "ECG Data: 0x%04x", ECGData);
+    }
 }

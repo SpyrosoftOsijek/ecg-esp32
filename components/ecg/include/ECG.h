@@ -3,15 +3,18 @@
 
 #include <cstdint>
 #include "IECGDataProvider.h"
+#include <queue>
 
 class ECG {
-private:
-    IECGDataProvider& serviceProvider;
 
 public:
     ECG(IECGDataProvider& serviceProviderRef) noexcept;
-    void getData();
+    const ECGDataQueue& getECGDataQueue() const;
     void displayECGData();
+    
+private:
+    IECGDataProvider& serviceProvider;
+    ECGDataQueue& dataQueue;
 };
 
 #endif 

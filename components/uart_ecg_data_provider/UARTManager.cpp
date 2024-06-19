@@ -10,11 +10,13 @@
 
 const char* EXAMPLE_TAG = "UARTManager";
 
-UARTManager::UARTManager()
+UARTManager::UARTManager(uint8_t txPin, uint8_t rxPin)
     : soft_uart_port(nullptr), rxBuff{},
-      flushFlag(false), ECGdataFSM(ECG_IDLE), ECGDataLength(0), dataCount(0), ECG16Bitdata(0) {}
+      flushFlag(false), ECGdataFSM(ECG_IDLE), ECGDataLength(0), dataCount(0), ECG16Bitdata(0) {
+    initialize(txPin, rxPin); 
+}
 
-void UARTManager::ECGDataGet() {
+void UARTManager::parseECGData() {
     uint8_t data;
     size_t expected_read_size = 1024;
 
@@ -62,51 +64,25 @@ void UARTManager::ECGDataGet() {
 
 void UARTManager::addECGData(const uint16_t* data, size_t length) { 
     for (size_t i = 0; i < length; i++) {
-        ECGQueue.push(data[i]);
+        dataQueue.push(data[i]);
     }
     flushFlag = true;
 }
 
-bool UARTManager::isFlushFlagSet() const {
-    return flushFlag;
-}
 
-void UARTManager::resetFlushFlag() {
-    flushFlag = false;
-}
 
-void UARTManager::init() {
+void UARTManager::initialize(uint8_t txPin, uint8_t rxPin) {
     esp_err_t ret = ESP_OK;
 
     soft_uart_config_t config = {
-        .tx_pin = UART_TX_PIN,
-        .rx_pin = UART_RX_PIN,
+        .tx_pin = txPin,
+        .rx_pin = rxPin,
         .baudrate = SOFT_UART_115200
     };
 
     ret = soft_uart_new(&config, &soft_uart_port);
 
-}
-
-uint8_t* UARTManager::getRxBuff() {
-    return rxBuff;
-}
-
-void UARTManager::displayData() {
-    std::queue<uint16_t> tempQueue = ECGQueue;
-
-    if (!flushFlag) {
-        return;
+    if (ret != ESP_OK) {
+        ESP_LOGE(EXAMPLE_TAG, "Error initializing UART: %s", esp_err_to_name(ret));
     }
-    flushFlag = false;
-
-    while (!tempQueue.empty()) {
-        uint16_t ECGData = tempQueue.front();
-        tempQueue.pop();
-        ESP_LOGI(EXAMPLE_TAG, "ECG Data: 0x%04x", ECGData);
-    }
-}
-
-std::queue<uint16_t> UARTManager::getECGQueue() const {
-    return ECGQueue;
 }
