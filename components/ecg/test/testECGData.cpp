@@ -6,46 +6,35 @@
 #include <queue>
 
 
-TEST_CASE("First test for ECG receive", "[ECG]") {
+TEST_CASE("Test adding data to ECG queue", "[ECG]") {
+    
     MockECGDataServiceProvider mockServiceProvider;
     ECG ecg(mockServiceProvider);
 
-    mockServiceProvider.rxBuff[0] = 0xAA;
-    mockServiceProvider.rxBuff[1] = 0x02;
-    mockServiceProvider.rxBuff[2] = 0x12;
-    mockServiceProvider.rxBuff[3] = 0x34;
-    mockServiceProvider.rxBuff[4] = 0xef;
+    uint16_t testData[] = {0x0001, 0x1111, 0x0203};
+    size_t testDataLength = sizeof(testData) / sizeof(testData[0]);
 
-    ecg.getData();
+    mockServiceProvider.addTestData(testData, testDataLength);
 
 
-    std::queue<uint16_t> testQueue = mockServiceProvider.getECGQueue();
-    if (!testQueue.empty()) {
-        TEST_ASSERT_EQUAL_HEX16(0x1234, testQueue.front());
+    std::queue<uint16_t>& dataQueue = mockServiceProvider.getECGQueue();
+
+    if (!dataQueue.empty()) {
+        TEST_ASSERT_EQUAL_UINT16(testData[0], dataQueue.front()); 
     }
 }
 
-TEST_CASE("Second test for ECG receive", "[ECG]") {
+
+TEST_CASE("Test length of test data vs added data to queue", "[ECG]") {
+    
     MockECGDataServiceProvider mockServiceProvider;
     ECG ecg(mockServiceProvider);
 
-    mockServiceProvider.rxBuff[0] = 0xAA;
-    mockServiceProvider.rxBuff[1] = 0x12;
-    mockServiceProvider.rxBuff[2] = 0x00;
-    mockServiceProvider.rxBuff[3] = 0x04;
-    mockServiceProvider.rxBuff[4] = 0x03;
-    mockServiceProvider.rxBuff[5] = 0x07;
-    mockServiceProvider.rxBuff[6] = 0x11;
-    mockServiceProvider.rxBuff[7] = 0x10;
-    mockServiceProvider.rxBuff[8] = 0xef;
+    uint16_t testData[] = {0x0001, 0x1111, 0x0203, 0x0001, 0x0001, 0x0001};
+    size_t testDataLength = sizeof(testData) / sizeof(testData[0]);
 
+    mockServiceProvider.addTestData(testData, testDataLength);
+    std::queue<uint16_t>& dataQueue = mockServiceProvider.getECGQueue();
+    TEST_ASSERT_EQUAL(testDataLength, dataQueue.size());
 
-    ecg.getData();
-
-
-    std::queue<uint16_t> testQueue = mockServiceProvider.getECGQueue();
-    if (!testQueue.empty()) {
-        testQueue.pop();
-        TEST_ASSERT_EQUAL_HEX16(0x0403, testQueue.front());
-    }
 }

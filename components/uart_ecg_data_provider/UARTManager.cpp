@@ -12,7 +12,7 @@ const char* EXAMPLE_TAG = "UARTManager";
 
 UARTManager::UARTManager(uint8_t txPin, uint8_t rxPin)
     : soft_uart_port(nullptr), rxBuff{},
-      flushFlag(false), ECGdataFSM(ECG_IDLE), ECGDataLength(0), dataCount(0), ECG16Bitdata(0) {
+       ECGdataFSM(ECG_IDLE), ECGDataLength(0), dataCount(0), ECG16Bitdata(0) {
     initialize(txPin, rxPin); 
 }
 
@@ -51,7 +51,6 @@ void UARTManager::parseECGData() {
                 case ECG_END:
                     if (data == 0xef) {
                         addECGData(ECGData16Buff, dataCount);
-                        flushFlag = true;
                     }
                     ECGdataFSM = ECG_IDLE;
                     break;
@@ -66,7 +65,6 @@ void UARTManager::addECGData(const uint16_t* data, size_t length) {
     for (size_t i = 0; i < length; i++) {
         dataQueue.push(data[i]);
     }
-    flushFlag = true;
 }
 
 

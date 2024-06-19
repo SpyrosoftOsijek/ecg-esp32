@@ -30,7 +30,6 @@ private:
     soft_uart_port_t soft_uart_port;
     uint8_t rxBuff[1024];
 
-    bool flushFlag;
     uint8_t ECGdataFSM;
     uint8_t ECGDataLength;
     uint8_t dataCount;
