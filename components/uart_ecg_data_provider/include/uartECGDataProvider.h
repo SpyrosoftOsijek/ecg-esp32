@@ -1,15 +1,13 @@
-#ifndef UARTMANAGER_H
-#define UARTMANAGER_H
-
+#ifndef UARTECGDATAPROVIDER_H
+#define UARTECGDATAPROVIDER_H
 #include "soft_uart.h"
 #include "IECGDataProvider.h"
 #include <cstdint>
 #include <queue>
+#define UART_TX_PIN CONFIG_EMULATE_UART_GPIO_TX
+#define UART_RX_PIN CONFIG_EMULATE_UART_GPIO_RX
 
-
-class UARTManager : public IECGDataProvider {
-
-
+class uartECGDataProvider : public IECGDataProvider {
     enum ECGState {
         ECG_IDLE,
         ECG_DATA_LENGTH,
@@ -18,23 +16,20 @@ class UARTManager : public IECGDataProvider {
         ECG_END,
     };
     
-
 public:
-    UARTManager(uint8_t txPin, uint8_t rxPin); 
-    void parseECGData() override; 
+    uartECGDataProvider(); 
 
 private:
-    void addECGData(const uint16_t* data, size_t length) override;
+    void parseECGData(esp_err_t);
     void initialize(uint8_t txPin, uint8_t rxPin); 
-
+    bool isPacketValid(size_t);
+    esp_err_t pollECGData() override;
     soft_uart_port_t soft_uart_port;
     uint8_t rxBuff[1024];
-
     uint8_t ECGdataFSM;
     uint8_t ECGDataLength;
     uint8_t dataCount;
-    uint16_t ECGData16Buff[128];
     uint16_t ECG16Bitdata;
-};
 
+};
 #endif 

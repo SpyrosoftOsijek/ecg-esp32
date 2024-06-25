@@ -1,20 +1,20 @@
 #ifndef ECG_H
 #define ECG_H
-
 #include <cstdint>
 #include "IECGDataProvider.h"
 #include <queue>
 
 class ECG {
-
 public:
-    ECG(IECGDataProvider& serviceProviderRef) noexcept;
+    ECG(IECGDataProvider& ecgDataProviderRef) noexcept;
     const ECGDataQueue& getECGDataQueue() const;
     void displayECGData();
+    void startGatheringECGData();
+    
     
 private:
-    IECGDataProvider& serviceProvider;
+    IECGDataProvider& ecgDataProvider;
     ECGDataQueue& dataQueue;
+    static void pollTask(void* arg);
 };
-
 #endif 
