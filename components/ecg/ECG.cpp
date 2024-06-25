@@ -7,8 +7,8 @@ const char* ECG_TAG = "ECG";
 ECG::ECG( IECGDataProvider& ecgDataProviderRef) noexcept
     : ecgDataProvider(ecgDataProviderRef), dataQueue{ecgDataProviderRef.getECGQueue()} {
 
-     ecgDataProvider.setCallback([this](const ECGDataQueue& queue) {
-        this->dataQueue = queue;
+     ecgDataProvider.setCallback([this](std::uint16_t data) {
+        this->dataQueue.push(data);
         this->displayECGData();       
     });
     }

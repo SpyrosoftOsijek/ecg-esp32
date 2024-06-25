@@ -8,7 +8,7 @@
 #include "esp_err.h" 
 
 using ECGDataQueue = std::queue<std::uint16_t>;
-using ECGDataCallback = std::function<void(const ECGDataQueue&)>;
+using ECGDataCallback = std::function<void(const std::uint16_t)>;
 
 
 class IECGDataProvider {
@@ -27,8 +27,7 @@ protected:
 
     virtual void invokeCallback( uint16_t data) {
         if (callback) {
-            dataQueue.push(data);
-            callback(dataQueue);
+            callback(data);
         }
     }
     friend class ECG; 
