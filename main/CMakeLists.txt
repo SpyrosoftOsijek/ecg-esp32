@@ -1,5 +1,5 @@
-set(srcs "soft_uart_main.cpp")
+set(srcs "main.cpp")
 
 idf_component_register(SRCS "${srcs}"
                        INCLUDE_DIRS "."
-                       PRIV_REQUIRES  ecg )
+                       REQUIRES  ecg uart_ecg_data_provider )

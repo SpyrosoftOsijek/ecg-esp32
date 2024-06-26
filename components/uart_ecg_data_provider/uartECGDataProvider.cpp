@@ -7,11 +7,44 @@ const uint8_t START_BYTE = 0xAA;
 const uint8_t END_BYTE = 0xef;
 const size_t expected_read_size = 1024;
 
+namespace ecgData{
+
 uartECGDataProvider::uartECGDataProvider()
     : soft_uart_port(nullptr), rxBuff{},
        ECGdataFSM(ECG_IDLE), ECGDataLength(0), dataCount(0), ECG16Bitdata(0) {
     initialize(CONFIG_EMULATE_UART_GPIO_TX, CONFIG_EMULATE_UART_GPIO_RX); 
 }
+
+
+ bool uartECGDataProvider::pollECGData()  { 
+    if (soft_uart_port == nullptr) {
+        ESP_LOGE(UART_ECG_DATA_PROVIDER_TAG, "UART port not initialized");
+        return false;
+    }
+
+    esp_err_t ret = soft_uart_receive(soft_uart_port, rxBuff, expected_read_size);
+    if (ret == ESP_OK) {
+        parseECGData(ret);
+    }
+    return true;
+}
+
+
+
+void uartECGDataProvider::initialize(uint8_t txPin, uint8_t rxPin) {
+    soft_uart_config_t config = {
+        .tx_pin = txPin,
+        .rx_pin = rxPin,
+        .baudrate = SOFT_UART_115200
+    };
+
+    esp_err_t ret = soft_uart_new(&config, &soft_uart_port);
+   if (ret != ESP_OK) {
+       // ESP_GOTO_ON_FALSE(ret == ESP_OK, UART_ECG_DATA_PROVIDER_TAG, error, "Error initializing UART: %s", esp_err_to_name(ret)); // ne želim vidjet niakkav goto
+   }
+ 
+}
+
 
 bool uartECGDataProvider::isPacketValid(size_t startIdx) {
     size_t lengthIdx = startIdx + 1;
@@ -27,18 +60,6 @@ bool uartECGDataProvider::isPacketValid(size_t startIdx) {
     return true;
 }
 
- esp_err_t uartECGDataProvider::pollECGData()  { 
-    if (soft_uart_port == nullptr) {
-        ESP_LOGE(UART_ECG_DATA_PROVIDER_TAG, "UART port not initialized");
-        return ESP_FAIL;
-    }
-
-    esp_err_t ret = soft_uart_receive(soft_uart_port, rxBuff, expected_read_size);
-    if (ret == ESP_OK) {
-        parseECGData(ret);
-    }
-    return ret;
-}
 
 void uartECGDataProvider::parseECGData(esp_err_t ret) {
     if (ret == ESP_OK) {
@@ -72,8 +93,6 @@ void uartECGDataProvider::parseECGData(esp_err_t ret) {
                 if (i + 1 < expected_read_size) {
                     uint16_t lowByte = rxBuff[++i];
                     ESP_LOGI(UART_ECG_DATA_PROVIDER_TAG, "Received byte: 0x%02x at index %d", lowByte, i);
-                    ESP_LOGI(UART_ECG_DATA_PROVIDER_TAG, "High byte: 0x%02x at index %d", highByte, i - 1);
-                    ESP_LOGI(UART_ECG_DATA_PROVIDER_TAG, "Low byte: 0x%02x at index %d", lowByte, i);
                     uint16_t ECG16Bitdata = (highByte << 8) | lowByte;
                     invokeCallback(ECG16Bitdata);
                     dataCount++;
@@ -94,18 +113,4 @@ void uartECGDataProvider::parseECGData(esp_err_t ret) {
     }
 }
 
-
-
-void uartECGDataProvider::initialize(uint8_t txPin, uint8_t rxPin) {
-    soft_uart_config_t config = {
-        .tx_pin = txPin,
-        .rx_pin = rxPin,
-        .baudrate = SOFT_UART_115200
-    };
-
-    esp_err_t ret = soft_uart_new(&config, &soft_uart_port);
-   if (ret != ESP_OK) {
-       // ESP_GOTO_ON_FALSE(ret == ESP_OK, UART_ECG_DATA_PROVIDER_TAG, error, "Error initializing UART: %s", esp_err_to_name(ret)); // ne želim vidjet niakkav goto
-   }
- 
 }
