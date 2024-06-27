@@ -2,7 +2,6 @@
 #include "esp_log.h"
 #include <memory>
 
-// namespace ecg_data_provider // namespace uart
 namespace ecg
 {
 namespace provider{
@@ -65,7 +64,7 @@ void UartECGDataProvider::parseEcgPackage(const std::size_t start_index, const s
     for (std::size_t i = start_index; i < end_index; i += 2)
     {
         const std::uint16_t ecg_data_element = (receive_buffer_[i] << 8) + receive_buffer_[i + 1];
-        ESP_LOGI(kUartEcgDataProviderTag, "Deserialized data element: %u", ecg_data_element);
+        ESP_LOGD(kUartEcgDataProviderTag, "Deserialized data element: %u", ecg_data_element);
         InvokeCallback(ecg_data_element);
     }
 }
