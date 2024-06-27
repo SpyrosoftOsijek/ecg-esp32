@@ -1,49 +1,51 @@
-#include "ECG.h"
+#include <memory>
+#include "ecg.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-const char *ECG_TAG = "ECG"; 
-constexpr std::uint32_t TASK_STACK_SIZE{2048};
-constexpr unsigned int TASK_UX_PRIORITY{5};
-constexpr TaskHandle_t * const TASK__PX_CREATED_TASK{nullptr};
+constexpr char* kEcgTag = "ECG";
+constexpr std::uint32_t kTaskStackSize{2048};
+constexpr unsigned int kTaskUxPriority{5};
+constexpr TaskHandle_t* const kTaskPXCreatedTask{nullptr};
 
-namespace ecgData{
+namespace ecg
+{
     
-ECG::ECG(IECGDataProvider &ecgDataProviderRef) noexcept
-    : ecgDataProvider(ecgDataProviderRef), dataQueue{ecgDataProviderRef.getECGQueue()}
-{
-    ecgDataProvider.setCallback([this](std::uint16_t data)
-                                { this->dataQueue.push(data); });
+ECG::ECG(std::unique_ptr<IECGDataProvider> ecg_data_provider_ptr) noexcept
+    : ecg_data_provider_(std::move(ecg_data_provider_ptr)), data_queue_{}{
+    data_queue_ = ecg_data_provider_->GetECGQueue();
+    ecg_data_provider_->SetCallback([this](const std::uint16_t data)
+                                { this->data_queue_.push(data); });
 }
 
-const ECGDataQueue &ECG::getECGDataQueue() const
+void ECG::StartGatheringECGData()
 {
-    return dataQueue;
+    xTaskCreate(PollTask, "ECGPollTask", kTaskStackSize, this, kTaskUxPriority, kTaskPXCreatedTask);
 }
 
-void ECG::displayECGData()
+const ECGDataQueue& ECG::GetECGDataQueue() const
 {
-    while (!dataQueue.empty())
+    return data_queue_;
+}
+
+void ECG::DisplayECGData()
+{
+    while (!data_queue_.empty())
     {
-        uint16_t ECGData = dataQueue.front();
-        dataQueue.pop();
-        ESP_LOGI(ECG_TAG, "ECG Data: 0x%04x", ECGData);
+        std::uint16_t ECGData = data_queue_.front();
+        data_queue_.pop();
+        ESP_LOGD(kEcgTag, "ECG Data: 0x%04x", ECGData);
     }
 }
 
-void ECG::startGatheringECGData()
+void ECG::PollTask(void* pv_parameters)
 {
-    xTaskCreate(pollTask, "ECGPollTask", TASK_STACK_SIZE, this, TASK_UX_PRIORITY, TASK__PX_CREATED_TASK);
-}
-
-void ECG::pollTask(void *pvParameters )
-{
-    ECG *ecg = static_cast<ECG *>(pvParameters);
+    ECG* ecg = static_cast<ECG* >(pv_parameters);
     while (true)
     {
-        ecg->ecgDataProvider.pollECGData();
+        ecg->ecg_data_provider_->PollECGData();
         vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
-}
+} //namespace ecg

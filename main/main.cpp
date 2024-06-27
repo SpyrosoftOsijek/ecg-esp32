@@ -2,18 +2,17 @@
 #include <memory>
 #include "esp_log.h"
 #include "ECG.h"
-#include "uartECGDataProvider.h"
+#include "uart_ecg_data_provider.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-const char* MAIN_TAG = "Main";
-//static ecgData::ECG* globalEcgInstance = nullptr;
+constexpr const char* MAIN_TAG = "Main";
 
 extern "C" void app_main(void) {
-    ESP_LOGI(MAIN_TAG, "Application startup");
+    ESP_LOGD(MAIN_TAG, "Application startup");
 
-    auto uartDataProvider = std::make_unique<ecgData::uartECGDataProvider>();
-    auto ecg = std::make_unique<ecgData::ECG>(*uartDataProvider);
+    auto uartDataProvider = std::make_unique<ecg::provider::UartECGDataProvider>(CONFIG_EMULATE_UART_GPIO_TX, CONFIG_EMULATE_UART_GPIO_RX);
+    ecg::ECG ecg(std::move(uartDataProvider)); 
 
-    ecg->startGatheringECGData();
+    ecg.StartGatheringECGData();
 }
