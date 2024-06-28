@@ -1,5 +1,5 @@
-#ifndef MOCK_ECG_DATA_PROVIDER_H
-#define MOCK_ECG_DATA_PROVIDER_H
+#ifndef ECG_MOCK_ECG_DATA_PROVIDER_H
+#define ECG_MOCK_ECG_DATA_PROVIDER_H
 
 #include "iecg_data_provider.h"
 #include <cstddef>
@@ -22,8 +22,6 @@ private:
     void AddECGData(const uint16_t* data, size_t length);
     std::queue<std::uint16_t> dataset_;
 };
-
 } // namespace provider
 } // namespace ecg
-
 #endif // MOCK_ECG_DATA_PROVIDER_H

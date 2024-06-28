@@ -1,10 +1,7 @@
-#include <iostream>
 #include <memory>
 #include "esp_log.h"
-#include "ECG.h"
+#include "ecg.h"
 #include "uart_ecg_data_provider.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 
 constexpr const char* MAIN_TAG = "Main";
 

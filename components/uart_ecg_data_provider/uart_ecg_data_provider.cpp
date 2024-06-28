@@ -1,6 +1,5 @@
 #include "uart_ecg_data_provider.h"
 #include "esp_log.h"
-#include <memory>
 
 namespace ecg
 {

@@ -1,12 +1,12 @@
 #include "mock_ecg_data_provider.h"
-#include "ECG.h"
+#include "ecg.h"
 #include "unity.h"
 #include <queue>
 #include <vector>
-using namespace ecg;
-using namespace ecg::provider;
 
-TEST_CASE("Test adding data to ECG queue-neww", "[ECG]") {
+namespace ecg::provider {
+
+TEST_CASE("Test adding data to ECG queue", "[ECG]") {
     auto mock_provider = std::make_unique<MockECGDataServiceProvider>();
     std::vector<std::uint16_t> test_data = {0x0191, 0xffb7, 0x0089, 0x0001};
     mock_provider->AddTestData(test_data.data(), test_data.size());
@@ -20,3 +20,5 @@ TEST_CASE("Test adding data to ECG queue-neww", "[ECG]") {
         data_queue.pop();
     }
 }
+
+} // namespace ecg::provider

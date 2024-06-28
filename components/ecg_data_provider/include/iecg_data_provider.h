@@ -1,5 +1,5 @@
-#ifndef IECG_DATA_PROVIDER_H
-#define IECG_DATA_PROVIDER_H
+#ifndef ECG_DATA_PROVIDER_IECG_DATA_PROVIDER_H
+#define ECG_DATA_PROVIDER_IECG_DATA_PROVIDER_H
 
 #include <cstdint>
 #include <functional>

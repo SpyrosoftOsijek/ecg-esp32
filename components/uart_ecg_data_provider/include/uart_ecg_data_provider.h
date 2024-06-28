@@ -1,10 +1,9 @@
-#ifndef UART_ECG_DATA_PROVIDER_UARTECGDATAPROVIDER_H
-#define UART_ECG_DATA_PROVIDER_UARTECGDATAPROVIDER_H
+#ifndef UART_ECG_DATA_PROVIDER_UART_ECG_DATA_PROVIDER_H
+#define UART_ECG_DATA_PROVIDER_UART_ECG_DATA_PROVIDER_H
 
 #include "soft_uart.h"
 #include "iecg_data_provider.h"
 #include <cstdint>
-#include <queue>
 #include <array>
 #include <memory>
 
@@ -15,7 +14,6 @@ constexpr std::uint8_t kEndByte = 0xef;
 
 namespace ecg
 {
-    
 namespace provider{
 class UartECGDataProvider : public IECGDataProvider
 {
