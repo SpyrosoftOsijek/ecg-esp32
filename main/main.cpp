@@ -15,11 +15,7 @@ extern "C" void app_main(void) {
 
     ecg.StartGatheringECGData();
 
-    // initialize bt
     BluetoothECGWrapper bt_ecg_wrapper{};
-
-    // send dummy data
-    while (true)
-    {
-    }
+    uint8_t dummy_data = 5;
+    bt_ecg_wrapper.send_data(dummy_data);
 }

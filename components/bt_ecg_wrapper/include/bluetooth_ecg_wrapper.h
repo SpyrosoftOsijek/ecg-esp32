@@ -44,7 +44,6 @@ class BluetoothECGWrapper {
 
 public:
     BluetoothECGWrapper();
-    static BluetoothECGWrapper create();
     void send_data(const uint8_t data);
 
 private:

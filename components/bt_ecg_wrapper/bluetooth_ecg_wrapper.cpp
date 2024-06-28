@@ -132,7 +132,6 @@ static esp_ble_adv_params_t adv_params = {
     .adv_filter_policy = ADV_FILTER_ALLOW_SCAN_ANY_CON_ANY,
 };
 
-static uint8_t  dummy_data = 5;
 static gatts_profile_inst gl_profile_tab{};
 
 BluetoothECGWrapper::BluetoothECGWrapper()
@@ -142,13 +141,17 @@ BluetoothECGWrapper::BluetoothECGWrapper()
     gl_profile_tab.gatts_cb = esp_gatts_cb;
     gl_profile_tab.gatts_if = ESP_GATT_IF_NONE;
     gl_profile_tab.char_uuid = char_uuid;
+}
 
-    while (1)
+void BluetoothECGWrapper::send_data(uint8_t data)
+{
+     while (1)
     {
         vTaskDelay(pdMS_TO_TICKS(1000));
-        esp_ble_gatts_set_attr_value(gl_profile_tab.char_handle, sizeof(dummy_data), &dummy_data);
-        esp_ble_gatts_send_indicate(gl_profile_tab.gatts_if, gl_profile_tab.conn_id, gl_profile_tab.char_handle, sizeof(dummy_data), &dummy_data, true);
+        esp_ble_gatts_set_attr_value(gl_profile_tab.char_handle, sizeof(data), &data);
+        esp_ble_gatts_send_indicate(gl_profile_tab.gatts_if, gl_profile_tab.conn_id, gl_profile_tab.char_handle, sizeof(data), &data, true);
     }
+    
 }
 
 void BluetoothECGWrapper::esp_gap_cb(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
@@ -226,12 +229,6 @@ void BluetoothECGWrapper::esp_gatts_cb(esp_gatts_cb_event_t event, esp_gatt_if_t
         break;
      }
 
-    case ESP_GATTS_READ_EVT:
-    {
-        dummy_data++;
-    }
-    break;
-
     case ESP_GATTS_DISCONNECT_EVT:{
         esp_ble_gap_start_advertising(&adv_params);
         esp_ble_gap_config_adv_data(&scan_rsp_data);
@@ -257,5 +254,4 @@ void BluetoothECGWrapper::bluetooth_setup()
     esp_ble_gap_register_callback(esp_gap_cb);
     esp_ble_gatts_app_register(PROFILE_APP_ID);
     esp_ble_gatt_set_local_mtu(250);
-
 }
