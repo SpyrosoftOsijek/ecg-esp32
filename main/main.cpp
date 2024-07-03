@@ -19,8 +19,8 @@ extern "C" void app_main(void) {
     uint16_t dummy_data = 5;
     while(1)
     {
+        vTaskDelay(pdMS_TO_TICKS(500));
         bt_ecg_wrapper.send_data(dummy_data);
         dummy_data++;
-        vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
