@@ -1,6 +1,3 @@
-// Include guards?
-// const, noexcept metode?
-
 #include <array>
 #include <cstdint>
 #include <stdio.h>
@@ -24,16 +21,13 @@
 #include <esp_gatts_api.h>
 #include <string.h>
 
-class BluetoothECGWrapper
-{
+static const char* BLE_ECG_TAG = "ESP32_SPP";
+#define SPP_SERVER_NAME "ESP32_SPP_SERVER"
+#define DEVICE_NAME "ESP32_S3"
 
-public:
-    BluetoothECGWrapper();
-    void send_data(std::uint16_t data);
+#define PROFILE_APP_ID 0x55
+#define GATTS_NUM_HANDLE_TEST_A 4
+#define GATTS_CHAR_ONE 0xCCDD
 
-private:
-    void bluetooth_initialize();
-    void bluetooth_setup();
-    static void esp_gatts_cb(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
-    static void esp_gap_cb(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param);
-};
+#define adv_config_flag (1 << 0)
+#define scan_rsp_config_flag (1 << 1)

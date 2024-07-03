@@ -16,6 +16,11 @@ extern "C" void app_main(void) {
     ecg.StartGatheringECGData();
 
     BluetoothECGWrapper bt_ecg_wrapper{};
-    uint8_t dummy_data = 5;
-    bt_ecg_wrapper.send_data(dummy_data);
+    uint16_t dummy_data = 5;
+    while(1)
+    {
+        bt_ecg_wrapper.send_data(dummy_data);
+        dummy_data++;
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
 }
