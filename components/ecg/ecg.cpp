@@ -5,21 +5,23 @@
 #include "freertos/task.h"
 
 constexpr char* kEcgTag = "ECG";
-constexpr std::uint32_t kTaskStackSize{2048};
-constexpr unsigned int kTaskUxPriority{5};
 constexpr TaskHandle_t* const kTaskPXCreatedTask{nullptr};
 
 namespace ecg
 {
-    
-ECG::ECG(std::unique_ptr<IECGDataProvider> ecg_data_provider_ptr) noexcept
-    : ecg_data_provider_(std::move(ecg_data_provider_ptr)), data_queue_{}{
-    data_queue_ = ecg_data_provider_->GetECGQueue();
-    ecg_data_provider_->SetCallback([this](const std::uint16_t data)
-                                { this->data_queue_.push(data); });
+
+ECG::ECG(std::unique_ptr<IECGDataProvider> ecg_data_provider_ptr, std::size_t mtu_data_size) noexcept
+    : ecg_data_provider_(std::move(ecg_data_provider_ptr)), mtu_data_size_(mtu_data_size) {
+        data_queue_ = ecg_data_provider_->GetECGQueue();
+        ecg_data_provider_->SetCallback([this](const std::uint16_t data) {
+            if (this->data_queue_.size() < this->mtu_data_size_) {
+                this->data_queue_.push(data);
+            }    
+        }
+    );
 }
 
-void ECG::StartGatheringECGData()
+void ECG::StartGatheringECGData(std::uint32_t kTaskStackSize, unsigned int kTaskUxPriority)
 {
     xTaskCreate(PollTask, "ECGPollTask", kTaskStackSize, this, kTaskUxPriority, kTaskPXCreatedTask);
 }
