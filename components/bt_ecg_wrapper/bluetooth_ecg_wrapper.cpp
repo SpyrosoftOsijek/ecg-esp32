@@ -35,16 +35,9 @@ uint16_t gatts_if{ESP_GATT_IF_NONE};
 static constexpr std::uint16_t PROFILE_APP_ID = 0x1234;
 static constexpr std::uint16_t GATTS_NUM_HANDLE = 4;
 
-static uuid::uuid128_t SERVICE_UUID { uuid::to_byte_array("16695c8c-ef83-4e58-9688-020537829756") };
+static uuid::uuid128_t SERVICE_UUID { uuid::to_byte_array("00030000-ef83-4e58-9688-020537829756") };
 constexpr std::uint8_t SERVICE_INSTANCE_ID = 0; // 0 if unused
-uint8_t service_uuid[16] = {0xfb, 0x34, 0x9b, 0x5f, 0x80, 0x00, 0x00, 0x80, 0x00, 0x10, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00};
 uint16_t service_handle{0};
-
-esp_bt_uuid_t ecg_char_uuid = {
-    .len = ESP_UUID_LEN_128,
-    .uuid = {
-        .uuid128 = {0xfb, 0x34, 0x9b, 0x5f, 0x80, 0x00, 0x00, 0x80, 0x00, 0x10, 0x00, 0x00, 0xAA, 0x00, 0x00, 0x00}},
-};
 uint16_t ecg_char_handle{0};
 
 static uint8_t advertizing_service_uuid[16] = {0xfb, 0x34, 0x9a, 0x5f, 0x80, 0x00, 0x00, 0x80, 0x00, 0x10, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00};
@@ -187,6 +180,13 @@ void BluetoothECGWrapper::esp_gap_cb(esp_gap_ble_cb_event_t event, esp_ble_gap_c
         }
         break;
     case ESP_GAP_BLE_UPDATE_CONN_PARAMS_EVT:
+
+    ESP_LOGI(BLE_ECG_TAG, "status: %x",param->update_conn_params.status);
+    ESP_LOGI(BLE_ECG_TAG, "min_int: %d",param->update_conn_params.min_int);
+    ESP_LOGI(BLE_ECG_TAG, "max_int: %d",param->update_conn_params.max_int);
+    ESP_LOGI(BLE_ECG_TAG, "latency: %d",param->update_conn_params.latency);
+    ESP_LOGI(BLE_ECG_TAG, "conn_int: %d",param->update_conn_params.conn_int);
+    ESP_LOGI(BLE_ECG_TAG, "timeout: %d",param->update_conn_params.timeout);
         connected = true;
         break;
     default:
@@ -233,7 +233,7 @@ void BluetoothECGWrapper::esp_gatts_cb(esp_gatts_cb_event_t event, esp_gatt_if_t
 
     case ESP_GATTS_CONNECT_EVT:
     {
-        ESP_LOGI(BLE_ECG_TAG, "ESP_GATTS_CONNECT_EVT, conn_id %d, remote %02x:%02x:%02x:%02x:%02x:%02x:",
+        ESP_LOGI(BLE_ECG_TAG, "ESP_GATTS_CONNECT_EVT, conn_id %x, remote %02x:%02x:%02x:%02x:%02x:%02x:",
                  param->connect.conn_id,
                  param->connect.remote_bda[0], param->connect.remote_bda[1], param->connect.remote_bda[2],
                  param->connect.remote_bda[3], param->connect.remote_bda[4], param->connect.remote_bda[5]);
@@ -244,9 +244,10 @@ void BluetoothECGWrapper::esp_gatts_cb(esp_gatts_cb_event_t event, esp_gatt_if_t
 
     case ESP_GATTS_DISCONNECT_EVT:
     {
-        ESP_LOGI(BLE_ECG_TAG, "ESP_GATTS_DISCONNECT_EVT triggered");
-        connected = false;
+        ESP_LOGI(BLE_ECG_TAG, "ESP_GATTS_DISCONNECT_EVT triggered %x",param->disconnect.reason);
         setup_service(gatts_if);
+        esp_ble_gap_start_advertising(&adv_params);
+        connected = false;
         break;
     }
     default:
