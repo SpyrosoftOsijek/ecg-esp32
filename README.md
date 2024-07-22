@@ -68,6 +68,3 @@ ESP_GATTS_DISCONNECT_EVT triggered
 
 ## Troubleshooting
 For any technical queries, please open an issue on GitHub. We will get back to you soon.
-
-
-
