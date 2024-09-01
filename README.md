@@ -3,7 +3,10 @@
 
 #  ECG data processing on ESP32-S3  
 
-This project demonstrates how to process ECG signals using the ESP32-S3 and send the processed data over Bluetooth. The ESP target will read ECG data from the MAX30001 sensor, process the data, and then output the processed data via Bluetooth. The pins for reading the ECG data and outputting the processed data can be configured via `menuconfig`. 
+## Authors: Juraj Marinčić, Valentina Jelavić
+## Mentor: Flip Kulić
+
+This project was developed as part of an internship at Spyrosoft. It demonstrates how to process ECG signals using the ESP32-S3 and send the processed data over Bluetooth. The ESP target will read ECG data from the MAX30001 sensor, process the data, and then output the processed data via Bluetooth. The pins for reading the ECG data and outputting the processed data can be configured via `menuconfig`. 
 
 ### Data Processing
 
@@ -13,8 +16,8 @@ After configuring the I/Os, the project reads raw ECG data from the MAX30001 sen
 
 ### Hardware Required
 
-* ESP32-S3-DevKitC-1-N8R2 development board 
-* MAX30001GEVKIT# ECG sensor module 
+* ESP32-S3 development board 
+* M034 ECG sensor module 
 * USB cable for power supply and programming
 * Jumper wires to connect the ECG sensor to the ESP32-S3
 * ECG leads and electrodes to attach to the subject's body
