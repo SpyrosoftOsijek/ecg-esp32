@@ -4,6 +4,8 @@
 namespace ecg {
 namespace provider {
 
+constexpr uint8_t VALID_HEARTBEAT{1};
+
 UartECGDataProvider::UartECGDataProvider(const std::uint32_t tx_pin, const std::uint32_t rx_pin)
 {
     initialize(tx_pin, rx_pin);
@@ -72,10 +74,18 @@ bool UartECGDataProvider::isPackageValid(const std::size_t end_idx)
 
 void UartECGDataProvider::parseEcgPackage(const std::size_t start_index, const std::size_t end_index)
 {
-    for (std::size_t i = start_index; i < end_index; i += 2) {
+    // Last two are heartbeat bytes are for heartbeat so use end_index - 2
+    for (std::size_t i = start_index; i < end_index - 2; i += 2) {
+
         const std::uint16_t ecg_data_element = (receive_buffer_[i] << 8) + receive_buffer_[i + 1];
         ESP_LOGI(kUartEcgDataProviderTag, "Deserialized data element: %u", ecg_data_element);
         InvokeCallback(ecg_data_element);
+    }
+
+    if (receive_buffer_[end_index - 2] == VALID_HEARTBEAT) {
+        ESP_LOGI(kUartEcgDataProviderTag, "Heartbeat: %u", receive_buffer_[end_index-1]);
+    } else {
+        ESP_LOGW(kUartEcgDataProviderTag, "Invalid heartbeat");
     }
 }
 

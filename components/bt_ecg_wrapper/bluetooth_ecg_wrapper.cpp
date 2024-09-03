@@ -1,24 +1,12 @@
 #include "bluetooth_ecg_wrapper.h"
-#include "freertos/projdefs.h"
 #include "uuid_helper.h"
-
-#include <stdio.h>
-#include <inttypes.h>
-#include "sdkconfig.h"
 #include "esp_log.h"
-#include "esp_chip_info.h"
-#include "esp_flash.h"
-#include "esp_system.h"
-#include "esp_bt.h"
-#include "esp_gap_bt_api.h"
 #include "esp_bt_main.h"
-#include "esp_bt_device.h"
-#include "esp_spp_api.h"
-#include <esp_gap_ble_api.h>
-#include <nvs_flash.h>
-#include <esp_gattc_api.h>
-#include <esp_gatt_common_api.h>
-#include <esp_gatts_api.h>
+#include "esp_gap_ble_api.h"
+#include "nvs_flash.h"
+#include "esp_gatt_common_api.h"
+#include "esp_gatts_api.h"
+
 #include <string.h>
 #include <cstdint>
 
