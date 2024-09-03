@@ -3,9 +3,7 @@
 
 #include <cstdint>
 #include <functional>
-#include<queue>
 
-using ECGDataQueue = std::queue<std::uint16_t>;
 using ECGDataCallback = std::function<void(const std::uint16_t)>;
 
 namespace ecg
@@ -19,10 +17,6 @@ public:
     {
         callback_ = cb;
     }
-    virtual ECGDataQueue& GetECGQueue()
-    {
-        return data_queue_;
-    }
 
 protected:
     virtual void InvokeCallback(uint16_t data)
@@ -33,7 +27,6 @@ protected:
         }
     }
     
-    ECGDataQueue data_queue_{};
     ECGDataCallback callback_ = nullptr;
 };  
 } //namespace provider

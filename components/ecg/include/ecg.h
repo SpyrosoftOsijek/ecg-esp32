@@ -4,20 +4,19 @@
 #include "iecg_data_provider.h"
 #include <memory>
 namespace ecg{
+
 using namespace provider;
 class ECG {
 public:
-    ECG(std::unique_ptr<IECGDataProvider> ecg_data_provider_ptr) noexcept;
-    void StartGatheringECGData();
-    const ECGDataQueue& GetECGDataQueue() const;
-    void DisplayECGData();
-    
-    
+    ECG(std::unique_ptr<IECGDataProvider> ecg_data_provider_ptr, ECGDataCallback data_callback, std::size_t mtu_data_size) noexcept;
+
+    void PollData() noexcept;
+
 private:
-    static void PollTask(void* pv_parameters);
     std::unique_ptr<IECGDataProvider> ecg_data_provider_;
-    ECGDataQueue data_queue_;
+    std::size_t mtu_data_size_;
 };
 }
+
 #endif 
 

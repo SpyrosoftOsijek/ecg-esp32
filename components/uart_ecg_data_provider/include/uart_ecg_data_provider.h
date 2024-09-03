@@ -19,6 +19,11 @@ class UartECGDataProvider : public IECGDataProvider
 {
 public:
     UartECGDataProvider(const std::uint32_t tx_pin, const std::uint32_t rx_pin);
+
+    UartECGDataProvider(const UartECGDataProvider&) = delete;
+
+    ~UartECGDataProvider();
+
     bool PollECGData() override;
 
 #ifndef UNIT_TESTING
@@ -29,7 +34,8 @@ private:
     bool isPackageValid(const std::size_t end_index);
     void parseEcgPackage(const std::size_t start_index, const std::size_t end_index);
 
-    std::unique_ptr<soft_uart_port_t> soft_uart_port_;
+    soft_uart_config_t config_{};
+    soft_uart_port_t soft_uart_port_{nullptr};
     std::array<std::uint8_t, kExpectedReadSize> receive_buffer_{};
 };
 }
