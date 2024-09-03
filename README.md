@@ -6,11 +6,11 @@
 ## Authors: Juraj Marinčić, Valentina Jelavić
 ## Mentor: Flip Kulić
 
-This project was developed as part of an internship at Spyrosoft. It demonstrates how to process ECG signals using the ESP32-S3 and send the processed data over Bluetooth. The ESP target will read ECG data from the MAX30001 sensor, process the data, and then output the processed data via Bluetooth. The pins for reading the ECG data and outputting the processed data can be configured via `menuconfig`. 
+This project was developed as part of an internship at Spyrosoft. It demonstrates how to process ECG signals using the ESP32-S3 and send the processed data over Bluetooth. The ESP target will read ECG data from the M034 module, process the data, and then output the processed data via Bluetooth. The pins for reading the ECG data and outputting the processed data can be configured via `menuconfig`. 
 
 ### Data Processing
 
-After configuring the I/Os, the project reads raw ECG data from the MAX30001 sensor, processes it and then sends the processed data via Bluetooth. The ECG sensor uses leads to detect electrical activity from the heart, which are then processed to extract meaningful ECG signals.
+After configuring the I/Os, the project reads raw ECG data from the M034 module, processes it and then sends the processed data via Bluetooth. The ECG sensor uses leads to detect electrical activity from the heart, which are then processed to extract meaningful ECG signals.
 
 ## How to use the project
 
@@ -24,9 +24,9 @@ After configuring the I/Os, the project reads raw ECG data from the MAX30001 sen
 
 ### Setting up the Hardware
 
-* Use jumper wires to connect the MAX30001 ECG sensor to the ESP32-S3 development board. Refer to the sensor's documentation for the correct pin connections.
+* Use jumper wires to connect the M034 module to the ESP32-S3 development board. Refer to the sensor's documentation for the correct pin connections.
 * Attach the ECG electrodes to the subject's body at the designated points (e.g., left arm, right arm, and left leg) to measure the heart's electrical activity.
-* Connect the ECG leads from the electrodes to the MAX30001 sensor.
+* Connect the ECG leads from the electrodes to the M034 module.
 
 ### Configure the project
 
